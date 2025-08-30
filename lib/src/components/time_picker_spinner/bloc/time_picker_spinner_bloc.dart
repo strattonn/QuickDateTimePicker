@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omni_datetime_picker/src/components/time_picker_spinner/bloc/utils.dart';
+import 'package:quick_datetime_picker/src/components/time_picker_spinner/bloc/utils.dart';
 
 part 'time_picker_spinner_event.dart';
 part 'time_picker_spinner_state.dart';

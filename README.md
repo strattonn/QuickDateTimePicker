@@ -11,31 +11,32 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-# Omni DateTime Picker
+# Quiick DateTime Picker
 
-[![pub package](https://img.shields.io/pub/v/omni_datetime_picker.svg)](https://pub.dev/packages/omni_datetime_picker)
+<!--[![pub package](https://img.shields.io/pub/v/omni_datetime_picker.svg)](https://pub.dev/packages/omni_datetime_picker)
+-->
 
-A DateTime picker that lets user select a date and the time, with start & end as a range.
+A DateTime picker that lets a user quickly select a date and the time, with start & end as a range.
 
 ## Screenshots
-
+<!-->
 |                                                                    Light                                                                     |                                                                    Dark                                                                    |
 | :------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------: |
 | ![Omni DateTime Range Picker - Light](https://raw.githubusercontent.com/alanchan-dev/OmniDateTimePicker/master/screenshots/lightmode_v2.png) | ![Omni DateTime Range Picker - Dark](https://raw.githubusercontent.com/alanchan-dev/OmniDateTimePicker/master/screenshots/darkmode_v2.png) |
-
+-->
 ## Getting started
 
 Add this to your package's pubspec.yaml file and run `flutter pub get`:
 
 ```yaml
 dependencies:
-  omni_datetime_picker: ^2.3.1
+  quick_datetime_picker: ^2.3.1
 ```
 
 Now in your Dart code, you can use:
 
 ```dart
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:quick_datetime_picker/quick_datetime_picker.dart';
 ```
 
 ## Usage
@@ -221,6 +222,4 @@ The returned value of showOmniDateTimeRangePicker() will be a List<DateTime> wit
 [startDateTime, endDateTime].
 ```
 
-## Usage with more flexibility
 
-`OmniDateTimePicker` is now available for use directly as a widget instead of the prebuilt dialogs.

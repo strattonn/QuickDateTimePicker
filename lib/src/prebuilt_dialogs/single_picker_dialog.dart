@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../components/button_row.dart';
-import '../enums/omni_datetime_picker_type.dart';
-import '../omni_datetime_picker.dart';
+import '../enums/quick_datetime_picker_type.dart';
+import '../quick_datetime_picker.dart';
 
 class SinglePickerDialog extends StatefulWidget {
   final Widget? title;
@@ -29,7 +29,7 @@ class SinglePickerDialog extends StatefulWidget {
   final EdgeInsets? insetPadding;
   final BorderRadiusGeometry? borderRadius;
   final BoxConstraints? constraints;
-  final OmniDateTimePickerType? type;
+  final QuickDateTimePickerType? type;
 
   final ButtonRowBuilder? actionsBuilder;
 
@@ -95,7 +95,7 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
                 widget.titleSeparator!,
               Flexible(
                 child: SingleChildScrollView(
-                  child: OmniDateTimePicker(
+                  child: QuickDateTimePicker(
                     onDateTimeChanged: (dateTime) {
                       selectedDateTime = dateTime;
                     },
@@ -119,7 +119,7 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
                     selectionOverlay: widget.selectionOverlay ??
                         const CupertinoPickerDefaultSelectionOverlay(),
                     separator: widget.separator,
-                    type: widget.type ?? OmniDateTimePickerType.dateAndTime,
+                    type: widget.type ?? QuickDateTimePickerType.dateAndTime,
                   ),
                 ),
               ),

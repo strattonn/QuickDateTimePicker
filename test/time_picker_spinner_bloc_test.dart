@@ -1,6 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:omni_datetime_picker/src/components/time_picker_spinner/bloc/time_picker_spinner_bloc.dart';
+import 'package:quick_datetime_picker/src/components/time_picker_spinner/bloc/time_picker_spinner_bloc.dart';
 
 void main() {
   group('TimePickerSpinnerBloc Tests', () {

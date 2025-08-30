@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../bloc/omni_datetime_picker_bloc.dart';
+import '../../bloc/quick_datetime_picker_bloc.dart';
 import 'bloc/time_picker_spinner_bloc.dart';
 
 class TimePickerSpinner extends StatelessWidget {
@@ -42,7 +42,7 @@ class TimePickerSpinner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final datetimeBloc = context.read<OmniDatetimePickerBloc>();
+    final datetimeBloc = context.read<QuickDatetimePickerBloc>();
     final timePickerTheme = Theme.of(context).timePickerTheme;
 
     return BlocProvider(
@@ -69,11 +69,11 @@ class TimePickerSpinner extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is TimePickerSpinnerLoaded) {
-            datetimeBloc.add(UpdateMinute(
+            datetimeBloc.add(QuickUpdateMinute(
                 minute: int.parse(state.minutes[state.initialMinuteIndex])));
 
             if (isShowSeconds) {
-              datetimeBloc.add(UpdateSecond(
+              datetimeBloc.add(QuickUpdateSecond(
                   second: int.parse(state.seconds[state.initialSecondIndex])));
             }
           }
@@ -106,10 +106,10 @@ class TimePickerSpinner extends StatelessWidget {
                               : 0;
                           final hourValue = index + hourOffset;
 
-                          datetimeBloc.add(UpdateHour(hour: hourValue));
+                          datetimeBloc.add(QuickUpdateHour(hour: hourValue));
                         } else {
                           final hourValue = int.parse(state.hours[index]);
-                          datetimeBloc.add(UpdateHour(hour: hourValue));
+                          datetimeBloc.add(QuickUpdateHour(hour: hourValue));
                         }
                       },
                       children: List.generate(
@@ -164,7 +164,7 @@ class TimePickerSpinner extends StatelessWidget {
                       selectionOverlay: selectionOverlay,
                       onSelectedItemChanged: (index) {
                         final minuteValue = int.parse(state.minutes[index]);
-                        datetimeBloc.add(UpdateMinute(minute: minuteValue));
+                        datetimeBloc.add(QuickUpdateMinute(minute: minuteValue));
                       },
                       children: List.generate(
                         state.minutes.length,
@@ -210,7 +210,7 @@ class TimePickerSpinner extends StatelessWidget {
                         selectionOverlay: selectionOverlay,
                         onSelectedItemChanged: (index) {
                           final secondValue = int.parse(state.seconds[index]);
-                          datetimeBloc.add(UpdateSecond(second: secondValue));
+                          datetimeBloc.add(QuickUpdateSecond(second: secondValue));
                         },
                         children: List.generate(
                           state.seconds.length,
@@ -257,10 +257,10 @@ class TimePickerSpinner extends StatelessWidget {
                         onSelectedItemChanged: (index) {
                           if (index == 0) {
                             datetimeBloc
-                                .add(const UpdateAbbreviation(isPm: false));
+                                .add(const QuickUpdateAbbreviation(isPm: false));
                           } else {
                             datetimeBloc
-                                .add(const UpdateAbbreviation(isPm: true));
+                                .add(const QuickUpdateAbbreviation(isPm: true));
                           }
                         },
                         childCount: state.abbreviations.length,
@@ -282,7 +282,7 @@ class TimePickerSpinner extends StatelessWidget {
     );
   }
 
-  bool _isHourDisabled(int hour, OmniDatetimePickerState state) {
+  bool _isHourDisabled(int hour, QuickDatetimePickerState state) {
     // For hour validation, only compare at the hour level
     if (_isSameDate(state.dateTime, state.firstDate)) {
       if (hour < state.firstDate.hour) {
@@ -299,7 +299,7 @@ class TimePickerSpinner extends StatelessWidget {
     return false;
   }
 
-  bool _isMinuteDisabled(int minute, OmniDatetimePickerState state) {
+  bool _isMinuteDisabled(int minute, QuickDatetimePickerState state) {
     // For minute validation, compare at the minute level when on the exact hour
     if (_isSameDate(state.dateTime, state.firstDate) &&
         state.dateTime.hour == state.firstDate.hour) {
@@ -318,7 +318,7 @@ class TimePickerSpinner extends StatelessWidget {
     return false;
   }
 
-  bool _isSecondDisabled(int second, OmniDatetimePickerState state) {
+  bool _isSecondDisabled(int second, QuickDatetimePickerState state) {
     // For second validation, compare at the second level when on the exact hour and minute
     if (_isSameDate(state.dateTime, state.firstDate) &&
         state.dateTime.hour == state.firstDate.hour &&

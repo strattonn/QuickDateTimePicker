@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:omni_datetime_picker/src/utils/date_time_extensions.dart';
+import 'package:quick_datetime_picker/src/utils/date_time_extensions.dart';
 
 void main() {
   group('DateTime Extensions Tests', () {

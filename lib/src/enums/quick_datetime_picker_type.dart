@@ -1,4 +1,4 @@
-enum OmniDateTimePickerType {
+enum QuickDateTimePickerType {
   date,
   time,
   dateAndTime,

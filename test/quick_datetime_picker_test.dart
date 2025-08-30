@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:quick_datetime_picker/quick_datetime_picker.dart';
 
 void main() {
-  group('OmniDateTimePicker Basic Tests', () {
+  group('QuickDateTimePicker Basic Tests', () {
     testWidgets('renders without error', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: OmniDateTimePicker(
+            body: QuickDateTimePicker(
               onDateTimeChanged: (dateTime) {},
             ),
           ),
         ),
       );
 
-      expect(find.byType(OmniDateTimePicker), findsOneWidget);
+  expect(find.byType(QuickDateTimePicker), findsOneWidget);
     });
 
     testWidgets('accepts initial date', (WidgetTester tester) async {
@@ -24,7 +24,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: OmniDateTimePicker(
+            body: QuickDateTimePicker(
               initialDate: initialDate,
               onDateTimeChanged: (dateTime) {},
             ),
@@ -32,15 +32,15 @@ void main() {
         ),
       );
 
-      expect(find.byType(OmniDateTimePicker), findsOneWidget);
+  expect(find.byType(QuickDateTimePicker), findsOneWidget);
     });
 
     testWidgets('handles different picker types', (WidgetTester tester) async {
-      for (final type in OmniDateTimePickerType.values) {
+  for (final type in QuickDateTimePickerType.values) {
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
-              body: OmniDateTimePicker(
+              body: QuickDateTimePicker(
                 type: type,
                 onDateTimeChanged: (dateTime) {},
               ),
@@ -48,7 +48,7 @@ void main() {
           ),
         );
 
-        expect(find.byType(OmniDateTimePicker), findsOneWidget);
+  expect(find.byType(QuickDateTimePicker), findsOneWidget);
 
         await tester.pumpWidget(Container());
       }
@@ -62,7 +62,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: OmniDateTimePicker(
+            body: QuickDateTimePicker(
               initialDate: initialDate,
               firstDate: firstDate,
               lastDate: lastDate,
@@ -72,7 +72,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(OmniDateTimePicker), findsOneWidget);
+  expect(find.byType(QuickDateTimePicker), findsOneWidget);
     });
   });
 }

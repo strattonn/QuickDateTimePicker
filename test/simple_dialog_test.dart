@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:quick_datetime_picker/quick_datetime_picker.dart';
 
 void main() {
   group('Dialog Functions Basic Tests', () {
-    testWidgets('showOmniDateTimePicker can be called',
+  testWidgets('showQuickDateTimePicker can be called',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -12,7 +12,7 @@ void main() {
             body: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () {
-                  showOmniDateTimePicker(context: context);
+                  showQuickDateTimePicker(context: context);
                 },
                 child: const Text('Show Picker'),
               ),
@@ -32,7 +32,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('showOmniDateTimeRangePicker can be called',
+  testWidgets('showQuickDateTimeRangePicker can be called',
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -40,7 +40,7 @@ void main() {
             body: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () {
-                  showOmniDateTimeRangePicker(context: context);
+                  showQuickDateTimeRangePicker(context: context);
                 },
                 child: const Text('Show Range Picker'),
               ),
@@ -68,9 +68,9 @@ void main() {
             body: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () {
-                  showOmniDateTimePicker(
+                  showQuickDateTimePicker(
                     context: context,
-                    type: OmniDateTimePickerType.date,
+                    type: QuickDateTimePickerType.date,
                     initialDate: DateTime(2024, 6, 15),
                     firstDate: DateTime(2024, 1, 1),
                     lastDate: DateTime(2024, 12, 31),

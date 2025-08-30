@@ -1,8 +1,8 @@
-name: omni_datetime_picker
+name: quick_datetime_picker
 description: "A datetime picker package with option to use a single datetime picker or a datetime range picker."
 version: 2.3.1
-repository: "https://github.com/alanchan-dev/OmniDateTimePicker"
-homepage: "https://alanchan.dev"
+repository: "https://github.com/strattonn/QuickDateTimePicker"
+homepage: ""
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

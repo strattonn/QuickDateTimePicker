@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:quick_datetime_picker/quick_datetime_picker.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -8,20 +8,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Omni DateTime Picker',
+      title: 'Quick DateTime Picker',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.cyan,
           brightness: Brightness.light,
         ),
       ),
-      home: const OmniExample(),
+      home: const QuickExample(),
     );
   }
 }
 
-class OmniExample extends StatelessWidget {
-  const OmniExample({super.key});
+class QuickExample extends StatelessWidget {
+  const QuickExample({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class OmniExample extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 final DateTime? dateTime =
-                    await showOmniDateTimePicker(context: context);
+                    await showQuickDateTimePicker(context: context);
 
                 // Use dateTime here
                 debugPrint('dateTime: $dateTime');
@@ -41,7 +41,7 @@ class OmniExample extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                final DateTime? result = await showOmniDateTimePicker(
+                final DateTime? result = await showQuickDateTimePicker(
                   context: context,
                   is24HourMode: true,
                 );
@@ -58,7 +58,7 @@ class OmniExample extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                final DateTime? result = await showOmniDateTimePicker(
+                final DateTime? result = await showQuickDateTimePicker(
                   context: context,
                   is24HourMode: true,
                   isShowSeconds: true,
@@ -77,7 +77,7 @@ class OmniExample extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 final List<DateTime>? dateTime =
-                    await showOmniDateTimeRangePicker(context: context);
+                    await showQuickDateTimeRangePicker(context: context);
 
                 // Use dateTime here
                 debugPrint('dateTime: $dateTime');

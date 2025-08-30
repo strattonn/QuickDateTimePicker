@@ -5,8 +5,8 @@ import '../components/button_row.dart';
 import '../components/custom_tab_view.dart';
 import '../components/range_tab_bar.dart';
 import '../enums/default_tab.dart';
-import '../enums/omni_datetime_picker_type.dart';
-import '../omni_datetime_picker.dart';
+import '../enums/quick_datetime_picker_type.dart';
+import '../quick_datetime_picker.dart';
 
 class RangePickerDialog extends StatefulWidget {
   final Widget? title;
@@ -39,7 +39,7 @@ class RangePickerDialog extends StatefulWidget {
   final EdgeInsets? insetPadding;
   final BorderRadiusGeometry? borderRadius;
   final BoxConstraints? constraints;
-  final OmniDateTimePickerType? type;
+  final QuickDateTimePickerType? type;
 
   final bool isForceEndDateAfterStartDate;
   final void Function()? onStartDateAfterEndDateError;
@@ -158,7 +158,7 @@ class _RangePickerDialogState extends State<RangePickerDialog>
                     controller: _tabController,
                     children: [
                       // Start
-                      OmniDateTimePicker(
+                      QuickDateTimePicker(
                         key: const ValueKey('start'),
                         onDateTimeChanged: (dateTime) {
                           _selectedStartDateTime = dateTime;
@@ -185,10 +185,10 @@ class _RangePickerDialogState extends State<RangePickerDialog>
                         selectionOverlay: widget.selectionOverlay ??
                             const CupertinoPickerDefaultSelectionOverlay(),
                         separator: widget.separator,
-                        type: widget.type ?? OmniDateTimePickerType.dateAndTime,
+                        type: widget.type ?? QuickDateTimePickerType.dateAndTime,
                       ),
                       // End
-                      OmniDateTimePicker(
+                      QuickDateTimePicker(
                         key: const ValueKey('end'),
                         onDateTimeChanged: (dateTime) {
                           _selectedEndDateTime = dateTime;
@@ -215,7 +215,7 @@ class _RangePickerDialogState extends State<RangePickerDialog>
                         selectionOverlay: widget.selectionOverlay ??
                             const CupertinoPickerDefaultSelectionOverlay(),
                         separator: widget.separator,
-                        type: widget.type ?? OmniDateTimePickerType.dateAndTime,
+                        type: widget.type ?? QuickDateTimePickerType.dateAndTime,
                       ),
                     ],
                   ),

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'components/button_row.dart';
 import 'enums/default_tab.dart';
-import 'enums/omni_datetime_picker_type.dart';
+import 'enums/quick_datetime_picker_type.dart';
 import 'prebuilt_dialogs/range_picker_dialog.dart';
 import 'prebuilt_dialogs/single_picker_dialog.dart';
 
-/// Show dialog of the [OmniDateTimePicker]
+/// Show dialog of the [QuickDateTimePicker]
 ///
 /// Returns a DateTime
 ///
-Future<DateTime?> showOmniDateTimePicker({
+Future<DateTime?> showQuickDateTimePicker({
   required BuildContext context,
   Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
       transitionBuilder,
@@ -20,7 +20,7 @@ Future<DateTime?> showOmniDateTimePicker({
   Widget? title,
   Widget? titleSeparator,
   Widget? separator,
-  OmniDateTimePickerType type = OmniDateTimePickerType.dateAndTime,
+  QuickDateTimePickerType type = QuickDateTimePickerType.dateAndTime,
   DateTime? initialDate,
   DateTime? firstDate,
   DateTime? lastDate,
@@ -53,12 +53,12 @@ Future<DateTime?> showOmniDateTimePicker({
         },
     transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
     barrierDismissible: barrierDismissible ?? true,
-    barrierLabel: 'OmniDateTimePicker',
+  barrierLabel: 'QuickDateTimePicker',
     barrierColor: barrierColor ?? const Color(0x80000000),
     pageBuilder: (context, anim1, anim2) {
       return Theme(
         data: theme ?? Theme.of(context),
-        child: SinglePickerDialog(
+  child: SinglePickerDialog(
           title: title,
           titleSeparator: titleSeparator,
           separator: separator,
@@ -83,13 +83,13 @@ Future<DateTime?> showOmniDateTimePicker({
   );
 }
 
-/// Show a dialog of the [OmniDateTimePicker]
+/// Show a dialog of the [QuickDateTimePicker]
 ///
 /// Returns a [List<DateTime>]
 /// with index 0 as startDateTime
 /// and index 1 as endDateTime
 ///
-Future<List<DateTime>?> showOmniDateTimeRangePicker({
+Future<List<DateTime>?> showQuickDateTimeRangePicker({
   required BuildContext context,
   DateTime? startInitialDate,
   DateTime? startFirstDate,
@@ -115,7 +115,7 @@ Future<List<DateTime>?> showOmniDateTimeRangePicker({
   Widget? startWidget,
   Widget? endWidget,
   Widget? separator,
-  OmniDateTimePickerType type = OmniDateTimePickerType.dateAndTime,
+  QuickDateTimePickerType type = QuickDateTimePickerType.dateAndTime,
   bool Function(DateTime)? startSelectableDayPredicate,
   bool Function(DateTime)? endSelectableDayPredicate,
   DefaultTab defaultTab = DefaultTab.start,
@@ -141,7 +141,7 @@ Future<List<DateTime>?> showOmniDateTimeRangePicker({
         },
     transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
     barrierDismissible: barrierDismissible ?? true,
-    barrierLabel: 'OmniDateTimeRangePicker',
+  barrierLabel: 'QuickDateTimeRangePicker',
     barrierColor: barrierColor ?? const Color(0x80000000),
     pageBuilder: (BuildContext context, anim1, anim2) {
       return Theme(

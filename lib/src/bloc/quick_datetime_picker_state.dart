@@ -1,11 +1,11 @@
-part of 'omni_datetime_picker_bloc.dart';
+part of 'quick_datetime_picker_bloc.dart';
 
-sealed class OmniDatetimePickerState extends Equatable {
+sealed class QuickDatetimePickerState extends Equatable {
   final DateTime dateTime;
   final DateTime firstDate;
   final DateTime lastDate;
 
-  const OmniDatetimePickerState({
+  const QuickDatetimePickerState({
     required this.dateTime,
     required this.firstDate,
     required this.lastDate,
@@ -80,16 +80,16 @@ sealed class OmniDatetimePickerState extends Equatable {
       ];
 }
 
-final class DateTimeInitial extends OmniDatetimePickerState {
-  const DateTimeInitial({
+final class QuickDateTimeInitial extends QuickDatetimePickerState {
+  const QuickDateTimeInitial({
     required super.dateTime,
     required super.firstDate,
     required super.lastDate,
   });
 }
 
-final class DateTimeChanged extends OmniDatetimePickerState {
-  const DateTimeChanged({
+final class QuickDateTimeChanged extends QuickDatetimePickerState {
+  const QuickDateTimeChanged({
     required super.dateTime,
     required super.firstDate,
     required super.lastDate,

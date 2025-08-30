@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/omni_datetime_picker_bloc.dart';
+import 'bloc/quick_datetime_picker_bloc.dart';
 import 'components/calendar/calendar.dart';
 import 'components/custom_scroll_behavior.dart';
 import 'components/time_picker_spinner/time_picker_spinner.dart';
-import 'enums/omni_datetime_picker_type.dart';
+import 'enums/quick_datetime_picker_type.dart';
 
-class OmniDateTimePicker extends StatefulWidget {
+class QuickDateTimePicker extends StatefulWidget {
   final DateTime? initialDate;
   final DateTime? firstDate;
   final DateTime? lastDate;
@@ -28,9 +28,9 @@ class OmniDateTimePicker extends StatefulWidget {
   final Widget selectionOverlay;
 
   final Widget? separator;
-  final OmniDateTimePickerType type;
+  final QuickDateTimePickerType type;
 
-  const OmniDateTimePicker({
+  const QuickDateTimePicker({
     super.key,
     this.initialDate,
     this.firstDate,
@@ -48,14 +48,14 @@ class OmniDateTimePicker extends StatefulWidget {
     this.looping = true,
     this.selectionOverlay = const CupertinoPickerDefaultSelectionOverlay(),
     this.separator,
-    this.type = OmniDateTimePickerType.dateAndTime,
+  this.type = QuickDateTimePickerType.dateAndTime,
   });
 
   @override
-  State<OmniDateTimePicker> createState() => _OmniDateTimePickerState();
+  State<QuickDateTimePicker> createState() => _QuickDateTimePickerState();
 }
 
-class _OmniDateTimePickerState extends State<OmniDateTimePicker> {
+class _QuickDateTimePickerState extends State<QuickDateTimePicker> {
   @override
   Widget build(BuildContext context) {
     final localizations = MaterialLocalizations.of(context);
@@ -85,13 +85,13 @@ class _OmniDateTimePickerState extends State<OmniDateTimePicker> {
                 initialDateTime.hour,
                 initialDateTime.minute);
 
-        return OmniDatetimePickerBloc(
+        return QuickDatetimePickerBloc(
           initialDateTime: truncatedInitialDateTime,
           firstDate: widget.firstDate ?? defaultFirstDate,
           lastDate: widget.lastDate ?? defaultLastDate,
         );
       },
-      child: BlocConsumer<OmniDatetimePickerBloc, OmniDatetimePickerState>(
+  child: BlocConsumer<QuickDatetimePickerBloc, QuickDatetimePickerState>(
         listener: (context, state) {
           widget.onDateTimeChanged(state.dateTime);
           widget.onCanSaveChanged?.call(state.isValidTime);
@@ -107,8 +107,8 @@ class _OmniDateTimePickerState extends State<OmniDateTimePicker> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.type == OmniDateTimePickerType.dateAndTime ||
-                    widget.type == OmniDateTimePickerType.date)
+                if (widget.type == QuickDateTimePickerType.dateAndTime ||
+                    widget.type == QuickDateTimePickerType.date)
                   Calendar(
                     initialDate: state.dateTime,
                     firstDate: state.firstDate,
@@ -116,13 +116,13 @@ class _OmniDateTimePickerState extends State<OmniDateTimePicker> {
                     selectableDayPredicate: widget.selectableDayPredicate,
                     onDateChanged: (datetime) {
                       context
-                          .read<OmniDatetimePickerBloc>()
-                          .add(UpdateDate(dateTime: datetime));
+                          .read<QuickDatetimePickerBloc>()
+                          .add(QuickUpdateDate(dateTime: datetime));
                     },
                   ),
                 if (widget.separator != null) widget.separator!,
-                if (widget.type == OmniDateTimePickerType.dateAndTime ||
-                    widget.type == OmniDateTimePickerType.time)
+        if (widget.type == QuickDateTimePickerType.dateAndTime ||
+          widget.type == QuickDateTimePickerType.time)
                   TimePickerSpinner(
                     amText:
                         widget.amText ?? localizations.anteMeridiemAbbreviation,
