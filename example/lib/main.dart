@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quick_datetime_picker/quick_datetime_picker.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
