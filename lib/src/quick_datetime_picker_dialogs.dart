@@ -28,6 +28,7 @@ Future<DateTime?> showQuickDateTimePicker({
   bool? isShowSeconds,
   int? minutesInterval,
   int? secondsInterval,
+  int? minuteIncrement, // New parameter
   bool? isForce2Digits,
   bool Function(DateTime)? selectableDayPredicate,
   BorderRadiusGeometry? borderRadius,
@@ -70,6 +71,7 @@ Future<DateTime?> showQuickDateTimePicker({
           isShowSeconds: isShowSeconds,
           minutesInterval: minutesInterval,
           secondsInterval: secondsInterval,
+          minuteIncrement: minuteIncrement, // Add the new parameter
           isForce2Digits: isForce2Digits,
           borderRadius: borderRadius,
           padding: padding,

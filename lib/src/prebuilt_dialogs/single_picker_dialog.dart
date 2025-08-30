@@ -22,6 +22,7 @@ class SinglePickerDialog extends StatefulWidget {
   final int? minutesInterval;
   final int? secondsInterval;
   final bool? isForce2Digits;
+  final int? minuteIncrement; // New parameter
   final bool? looping;
   final Widget? selectionOverlay;
 
@@ -49,6 +50,7 @@ class SinglePickerDialog extends StatefulWidget {
     this.minutesInterval,
     this.secondsInterval,
     this.isForce2Digits,
+    this.minuteIncrement, // Add to constructor
     this.looping,
     this.selectionOverlay,
     this.padding,
@@ -115,6 +117,7 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
                     minutesInterval: widget.minutesInterval ?? 1,
                     secondsInterval: widget.secondsInterval ?? 1,
                     isForce2Digits: widget.isForce2Digits ?? true,
+                    minuteIncrement: widget.minuteIncrement ?? 1, // Add the new parameter
                     looping: widget.looping ?? true,
                     selectionOverlay: widget.selectionOverlay ??
                         const CupertinoPickerDefaultSelectionOverlay(),

@@ -13,6 +13,7 @@ class TimePickerSpinner extends StatelessWidget {
   final int minutesInterval;
   final int secondsInterval;
   final bool isForce2Digits;
+  final int minuteIncrement; // New parameter for minute increment
 
   final double height;
   final double diameterRatio;
@@ -38,6 +39,7 @@ class TimePickerSpinner extends StatelessWidget {
     required this.minutesInterval,
     required this.secondsInterval,
     required this.isForce2Digits,
+    this.minuteIncrement = 1, // Default to 1 minute increment
   });
 
   @override
@@ -54,6 +56,7 @@ class TimePickerSpinner extends StatelessWidget {
         minutesInterval: minutesInterval,
         secondsInterval: secondsInterval,
         isForce2Digits: isForce2Digits,
+        minuteIncrement: minuteIncrement, // Pass the new parameter
         firstDateTime: datetimeBloc.state.firstDate,
         lastDateTime: datetimeBloc.state.lastDate,
         initialDateTime: datetimeBloc.state.dateTime,
@@ -87,37 +90,18 @@ class TimePickerSpinner extends StatelessWidget {
                 children: [
                   /// Hours
                   Expanded(
-                    child: CupertinoPicker(
-                      scrollController: FixedExtentScrollController(
-                        initialItem: state.initialHourIndex,
-                      ),
-                      diameterRatio: diameterRatio,
-                      itemExtent: itemExtent,
-                      squeeze: squeeze,
-                      magnification: magnification,
-                      looping: looping,
-                      selectionOverlay: selectionOverlay,
-                      onSelectedItemChanged: (index) {
-                        if (!is24HourMode) {
-                          final hourOffset = state
-                                      .abbreviationController.hasClients &&
-                                  state.abbreviationController.selectedItem == 1
-                              ? 12
-                              : 0;
-                          final hourValue = index + hourOffset;
-
-                          datetimeBloc.add(QuickUpdateHour(hour: hourValue));
-                        } else {
-                          final hourValue = int.parse(state.hours[index]);
-                          datetimeBloc.add(QuickUpdateHour(hour: hourValue));
-                        }
-                      },
-                      children: List.generate(
-                        growable: false,
-                        state.hours.length,
-                        (index) {
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          mainAxisSpacing: 8.0,
+                          crossAxisSpacing: 8.0,
+                        ),
+                        itemCount: state.hours.length,
+                        itemBuilder: (context, index) {
                           String hour = state.hours[index];
-                          // Calculate hour value based on current state rather than controller selection
                           final int hourValue = is24HourMode
                               ? int.parse(hour)
                               : (hour == '12' ? 0 : int.parse(hour)) +
@@ -127,24 +111,75 @@ class TimePickerSpinner extends StatelessWidget {
 
                           final bool isDisabled =
                               _isHourDisabled(hourValue, datetimeBloc.state);
+                          final bool isSelected =
+                              datetimeBloc.state.dateTime.hour == hourValue;
 
                           if (isForce2Digits) {
                             hour = hour.padLeft(2, '0');
                           }
 
-                          return Center(
-                              child: Text(hour,
-                                  style: timePickerTheme.hourMinuteTextStyle
-                                          ?.copyWith(
-                                        color: isDisabled
+                          return ElevatedButton(
+                            onPressed: isDisabled
+                                ? null
+                                : () {
+                                    if (!is24HourMode) {
+                                      final hourOffset = state
+                                                  .abbreviationController
+                                                  .hasClients &&
+                                              state.abbreviationController
+                                                      .selectedItem ==
+                                                  1
+                                          ? 12
+                                          : 0;
+                                      final selectedHourValue =
+                                          index + hourOffset;
+                                      datetimeBloc.add(QuickUpdateHour(
+                                          hour: selectedHourValue));
+                                    } else {
+                                      final selectedHourValue =
+                                          int.parse(state.hours[index]);
+                                      datetimeBloc.add(QuickUpdateHour(
+                                          hour: selectedHourValue));
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.surface,
+                              foregroundColor: isSelected
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : (isDisabled
+                                      ? Colors.grey.withValues(alpha: 0.5)
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Text(
+                              hour,
+                              style: timePickerTheme.hourMinuteTextStyle
+                                      ?.copyWith(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : (isDisabled
                                             ? Colors.grey.withValues(alpha: 0.5)
-                                            : null,
-                                      ) ??
-                                      TextStyle(
-                                        color: isDisabled
+                                            : null),
+                                  ) ??
+                                  TextStyle(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : (isDisabled
                                             ? Colors.grey.withValues(alpha: 0.5)
-                                            : null,
-                                      )));
+                                            : null),
+                                  ),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -152,44 +187,83 @@ class TimePickerSpinner extends StatelessWidget {
 
                   /// Minutes
                   Expanded(
-                    child: CupertinoPicker(
-                      scrollController: FixedExtentScrollController(
-                        initialItem: state.initialMinuteIndex,
-                      ),
-                      diameterRatio: diameterRatio,
-                      itemExtent: itemExtent,
-                      squeeze: squeeze,
-                      magnification: magnification,
-                      looping: looping,
-                      selectionOverlay: selectionOverlay,
-                      onSelectedItemChanged: (index) {
-                        final minuteValue = int.parse(state.minutes[index]);
-                        datetimeBloc.add(QuickUpdateMinute(minute: minuteValue));
-                      },
-                      children: List.generate(
-                        state.minutes.length,
-                        (index) {
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GridView.builder(
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: _minuteColumns(minuteIncrement),
+                          mainAxisSpacing: 8.0,
+                          crossAxisSpacing: 8.0,
+                        ),
+                        itemCount: state.minutes.length,
+                        itemBuilder: (context, index) {
                           String minute = state.minutes[index];
                           final int minuteValue = int.parse(minute);
                           final bool isDisabled = _isMinuteDisabled(
                               minuteValue, datetimeBloc.state);
+                          final bool isSelected =
+                              datetimeBloc.state.dateTime.minute == minuteValue;
 
                           if (isForce2Digits) {
                             minute = minute.padLeft(2, '0');
                           }
-                          return Center(
-                              child: Text(minute,
-                                  style: timePickerTheme.hourMinuteTextStyle
-                                          ?.copyWith(
-                                        color: isDisabled
+
+                          return ElevatedButton(
+                            onPressed: isDisabled
+                                ? null
+                                : () {
+                                    final selectedMinuteValue =
+                                        int.parse(state.minutes[index]);
+                                    datetimeBloc.add(QuickUpdateMinute(
+                                        minute: selectedMinuteValue));
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.surface,
+                              foregroundColor: isSelected
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : (isDisabled
+                                      ? Colors.grey.withValues(alpha: 0.5)
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                                vertical: 4.0,
+                              ),
+                              minimumSize: const Size(40, 40),
+                            ),
+                            child: Text(
+                              minute,
+                              style: timePickerTheme.hourMinuteTextStyle
+                                      ?.copyWith(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : (isDisabled
                                             ? Colors.grey.withValues(alpha: 0.5)
-                                            : null,
-                                      ) ??
-                                      TextStyle(
-                                        color: isDisabled
+                                            : null),
+                                  ) ??
+                                  TextStyle(
+                                    color: isSelected
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : (isDisabled
                                             ? Colors.grey.withValues(alpha: 0.5)
-                                            : null,
-                                      )));
+                                            : null),
+                                  ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.visible,
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -210,7 +284,8 @@ class TimePickerSpinner extends StatelessWidget {
                         selectionOverlay: selectionOverlay,
                         onSelectedItemChanged: (index) {
                           final secondValue = int.parse(state.seconds[index]);
-                          datetimeBloc.add(QuickUpdateSecond(second: secondValue));
+                          datetimeBloc
+                              .add(QuickUpdateSecond(second: secondValue));
                         },
                         children: List.generate(
                           state.seconds.length,
@@ -256,8 +331,8 @@ class TimePickerSpinner extends StatelessWidget {
                         selectionOverlay: selectionOverlay,
                         onSelectedItemChanged: (index) {
                           if (index == 0) {
-                            datetimeBloc
-                                .add(const QuickUpdateAbbreviation(isPm: false));
+                            datetimeBloc.add(
+                                const QuickUpdateAbbreviation(isPm: false));
                           } else {
                             datetimeBloc
                                 .add(const QuickUpdateAbbreviation(isPm: true));
@@ -343,5 +418,34 @@ class TimePickerSpinner extends StatelessWidget {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
+  }
+
+  int _minuteColumns(int minuteIncrement) {
+    switch (minuteIncrement) {
+      case 1:
+        return 6; // 0, 10, 20, 30, 40, 50
+      case 2:
+        return 6; // 0, 20, 40
+      case 3:
+        return 5; // 0, 15, 30, 45
+      case 4:
+        return 5; // 0, 20, 40
+      case 5:
+        return 4; // 0, 15, 30, 45
+      case 6:
+        return 4; // 0, 30
+      case 10:
+        return 3; // 0, 30
+      case 12:
+        return 3; // 0, 30
+      case 15:
+        return 2; // 0, 30
+      case 20:
+        return 2; // 0, 30
+      case 30:
+      default:
+        return 1; // Only one column needed for full hour increments
+    }
+
   }
 }
