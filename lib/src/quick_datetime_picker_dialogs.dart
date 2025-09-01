@@ -26,9 +26,8 @@ Future<DateTime?> showQuickDateTimePicker({
   DateTime? lastDate,
   bool? is24HourMode,
   bool? isShowSeconds,
-  int? minutesInterval,
-  int? secondsInterval,
-  int? minuteIncrement, // New parameter
+  int minutesInterval = 1,
+  int secondsInterval = 1,
   bool? isForce2Digits,
   bool Function(DateTime)? selectableDayPredicate,
   BorderRadiusGeometry? borderRadius,
@@ -52,14 +51,14 @@ Future<DateTime?> showQuickDateTimePicker({
             child: child,
           );
         },
-    transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
-    barrierDismissible: barrierDismissible ?? true,
+  transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
+  barrierDismissible: barrierDismissible ?? true,
   barrierLabel: 'QuickDateTimePicker',
     barrierColor: barrierColor ?? const Color(0x80000000),
     pageBuilder: (context, anim1, anim2) {
       return Theme(
         data: theme ?? Theme.of(context),
-  child: SinglePickerDialog(
+    child: SinglePickerDialog(
           title: title,
           titleSeparator: titleSeparator,
           separator: separator,
@@ -71,7 +70,6 @@ Future<DateTime?> showQuickDateTimePicker({
           isShowSeconds: isShowSeconds,
           minutesInterval: minutesInterval,
           secondsInterval: secondsInterval,
-          minuteIncrement: minuteIncrement, // Add the new parameter
           isForce2Digits: isForce2Digits,
           borderRadius: borderRadius,
           padding: padding,
@@ -101,8 +99,8 @@ Future<List<DateTime>?> showQuickDateTimeRangePicker({
   DateTime? endLastDate,
   bool? is24HourMode,
   bool? isShowSeconds,
-  int? minutesInterval,
-  int? secondsInterval,
+  int minutesInterval = 1,
+  int secondsInterval = 1,
   bool? isForce2Digits,
   bool? isForceEndDateAfterStartDate,
   void Function()? onStartDateAfterEndDateError,
@@ -141,8 +139,8 @@ Future<List<DateTime>?> showQuickDateTimeRangePicker({
             child: child,
           );
         },
-    transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
-    barrierDismissible: barrierDismissible ?? true,
+  transitionDuration: transitionDuration ?? const Duration(milliseconds: 200),
+  barrierDismissible: barrierDismissible ?? true,
   barrierLabel: 'QuickDateTimeRangePicker',
     barrierColor: barrierColor ?? const Color(0x80000000),
     pageBuilder: (BuildContext context, anim1, anim2) {

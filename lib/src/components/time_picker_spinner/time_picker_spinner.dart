@@ -13,7 +13,6 @@ class TimePickerSpinner extends StatelessWidget {
   final int minutesInterval;
   final int secondsInterval;
   final bool isForce2Digits;
-  final int minuteIncrement; // New parameter for minute increment
 
   final double height;
   final double diameterRatio;
@@ -39,7 +38,6 @@ class TimePickerSpinner extends StatelessWidget {
     required this.minutesInterval,
     required this.secondsInterval,
     required this.isForce2Digits,
-    this.minuteIncrement = 1, // Default to 1 minute increment
   });
 
   @override
@@ -56,7 +54,6 @@ class TimePickerSpinner extends StatelessWidget {
         minutesInterval: minutesInterval,
         secondsInterval: secondsInterval,
         isForce2Digits: isForce2Digits,
-        minuteIncrement: minuteIncrement, // Pass the new parameter
         firstDateTime: datetimeBloc.state.firstDate,
         lastDateTime: datetimeBloc.state.lastDate,
         initialDateTime: datetimeBloc.state.dateTime,
@@ -83,22 +80,76 @@ class TimePickerSpinner extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is TimePickerSpinnerLoaded) {
-            return SizedBox(
-              height: height,
-              child: Row(
-                textDirection: TextDirection.ltr,
-                children: [
-                  /// Hours
-                  Expanded(
+            // Compute minute columns once per build for performance
+            final minuteColumns = _minuteColumns(minutesInterval);
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                // Section fixed widths for horizontal layout
+                const double hoursWidth = 140;
+                final double minutesWidth = minuteColumns * 45.0;
+                const double secondsWidth = 80;
+                const double ampmWidth = 70;
+                // Section heights (wide mode uses fixed height; stacked uses computed heights)
+                // minutesHeight replaced by minutesStackedHeight in narrow mode
+                final double secondsHeight = height;
+                // AM/PM will use compact fixed height in stacked layout
+
+                final double requiredHorizontalWidth =
+                    hoursWidth + minutesWidth +
+                    (isShowSeconds ? secondsWidth : 0) +
+                    (!is24HourMode ? ampmWidth : 0) + 16; // small padding allowance
+
+                final bool isNarrow = constraints.maxWidth < requiredHorizontalWidth;
+
+        // Precompute minutes grid height for stacked layout (no internal scroll)
+        final int minuteItemCount = state.minutes.length;
+        final int minuteRows = (minuteItemCount / minuteColumns).ceil();
+        const double minutesPaddingH = 8.0; // container horizontal (4 + 4)
+        const double minutesPaddingV = 8.0; // container vertical (4 + 4)
+        const double minutesSpacing = 4.0; // Grid mainAxisSpacing
+        final double gridAvailWidth = constraints.maxWidth - minutesPaddingH -
+          (minuteColumns > 1 ? (minuteColumns - 1) * minutesSpacing : 0);
+        final double tileWidth = gridAvailWidth / minuteColumns;
+        final double tileHeight = tileWidth; // childAspectRatio == 1.0
+        final double minutesStackedHeight =
+          (minuteRows * tileHeight) +
+          (minuteRows > 1 ? (minuteRows - 1) * minutesSpacing : 0) +
+          minutesPaddingV + 2; // small safety to avoid visual clipping
+
+        // Precompute hours grid height for stacked layout (no internal scroll)
+        const int hourColumns = 4; // matches grid crossAxisCount below
+        final int hourItemCount = state.hours.length;
+        final int hourRows = (hourItemCount / hourColumns).ceil();
+        const double hoursPaddingH = 8.0; // container horizontal (4 + 4)
+        const double hoursPaddingV = 8.0; // container vertical (4 + 4)
+        const double hoursSpacing = 3.0; // Grid mainAxisSpacing
+        final double hoursAvailWidth = constraints.maxWidth - hoursPaddingH -
+          (hourColumns > 1 ? (hourColumns - 1) * hoursSpacing : 0);
+        final double hourTileW = hoursAvailWidth / hourColumns;
+        final double hourTileH = hourTileW; // square tiles
+        final double hoursStackedHeight =
+          (hourRows * hourTileH) +
+          (hourRows > 1 ? (hourRows - 1) * hoursSpacing : 0) +
+          hoursPaddingV + 2;
+
+                // Helpers to build each section; expanded=true uses full width
+                Widget buildHours({required bool expanded}) {
+                  final double targetHeight = expanded ? hoursStackedHeight : height;
+                  return SizedBox(
+                    width: expanded ? constraints.maxWidth : hoursWidth,
+                    height: targetHeight,
                     child: Container(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
-                          mainAxisSpacing: 8.0,
-                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 3.0,
+                          crossAxisSpacing: 3.0,
+                          childAspectRatio: 1.0,
                         ),
+                        physics: expanded ? const NeverScrollableScrollPhysics() : null,
+                        shrinkWrap: expanded,
                         itemCount: state.hours.length,
                         itemBuilder: (context, index) {
                           String hour = state.hours[index];
@@ -118,19 +169,15 @@ class TimePickerSpinner extends StatelessWidget {
                             hour = hour.padLeft(2, '0');
                           }
 
-                          return ElevatedButton(
+              return ElevatedButton(
                             onPressed: isDisabled
                                 ? null
                                 : () {
                                     if (!is24HourMode) {
-                                      final hourOffset = state
-                                                  .abbreviationController
-                                                  .hasClients &&
-                                              state.abbreviationController
-                                                      .selectedItem ==
-                                                  1
-                                          ? 12
-                                          : 0;
+                    final hourOffset =
+                      (datetimeBloc.state.dateTime.hour >= 12)
+                        ? 12
+                        : 0;
                                       final selectedHourValue =
                                           index + hourOffset;
                                       datetimeBloc.add(QuickUpdateHour(
@@ -156,46 +203,50 @@ class TimePickerSpinner extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                                vertical: 4.0,
+                              ),
+                              minimumSize: const Size(40, 40),
                             ),
-                            child: Text(
-                              hour,
-                              style: timePickerTheme.hourMinuteTextStyle
-                                      ?.copyWith(
-                                    color: isSelected
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                        : (isDisabled
-                                            ? Colors.grey.withValues(alpha: 0.5)
-                                            : null),
-                                  ) ??
-                                  TextStyle(
-                                    color: isSelected
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                        : (isDisabled
-                                            ? Colors.grey.withValues(alpha: 0.5)
-                                            : null),
-                                  ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                hour,
+                                style: timePickerTheme.hourMinuteTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
-                  ),
+                  );
+                }
 
-                  /// Minutes
-                  Expanded(
+                Widget buildMinutes({required bool expanded}) {
+                  final double targetHeight = expanded ? minutesStackedHeight : height;
+                  return SizedBox(
+                    width: expanded ? constraints.maxWidth : minutesWidth,
+                    height: targetHeight,
                     child: Container(
-                      padding: const EdgeInsets.all(8.0),
+                      // Match hours' container padding so tops align
+                      padding: const EdgeInsets.all(4.0),
                       child: GridView.builder(
                         gridDelegate:
                             SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: _minuteColumns(minuteIncrement),
-                          mainAxisSpacing: 8.0,
-                          crossAxisSpacing: 8.0,
+                          crossAxisCount: minuteColumns,
+                          mainAxisSpacing: 4.0,
+                          crossAxisSpacing: 4.0,
+                          childAspectRatio: 1.0,
                         ),
+                        // In stacked layout, disable internal scrolling and size to content
+                        physics: expanded
+                            ? const NeverScrollableScrollPhysics()
+                            : null,
+                        shrinkWrap: expanded,
                         itemCount: state.minutes.length,
                         itemBuilder: (context, index) {
                           String minute = state.minutes[index];
@@ -238,116 +289,270 @@ class TimePickerSpinner extends StatelessWidget {
                               ),
                               minimumSize: const Size(40, 40),
                             ),
-                            child: Text(
-                              minute,
-                              style: timePickerTheme.hourMinuteTextStyle
-                                      ?.copyWith(
-                                    color: isSelected
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                        : (isDisabled
-                                            ? Colors.grey.withValues(alpha: 0.5)
-                                            : null),
-                                  ) ??
-                                  TextStyle(
-                                    color: isSelected
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                        : (isDisabled
-                                            ? Colors.grey.withValues(alpha: 0.5)
-                                            : null),
-                                  ),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.visible,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                minute,
+                                style: timePickerTheme.hourMinuteTextStyle,
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
-                  ),
+                  );
+                }
 
-                  /// Seconds
-                  if (isShowSeconds)
-                    Expanded(
-                      child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(
-                          initialItem: state.initialSecondIndex,
-                        ),
-                        diameterRatio: diameterRatio,
-                        itemExtent: itemExtent,
-                        squeeze: squeeze,
-                        magnification: magnification,
-                        looping: looping,
-                        selectionOverlay: selectionOverlay,
-                        onSelectedItemChanged: (index) {
-                          final secondValue = int.parse(state.seconds[index]);
-                          datetimeBloc
-                              .add(QuickUpdateSecond(second: secondValue));
-                        },
-                        children: List.generate(
-                          state.seconds.length,
-                          (index) {
-                            String second = state.seconds[index];
-                            final int secondValue = int.parse(second);
-                            final bool isDisabled = _isSecondDisabled(
-                                secondValue, datetimeBloc.state);
-
-                            if (isForce2Digits) {
-                              second = second.padLeft(2, '0');
-                            }
-
-                            return Center(
-                                child: Text(second,
-                                    style: timePickerTheme.hourMinuteTextStyle
-                                            ?.copyWith(
-                                          color: isDisabled
-                                              ? Colors.grey
-                                                  .withValues(alpha: 0.5)
-                                              : null,
-                                        ) ??
-                                        TextStyle(
-                                          color: isDisabled
-                                              ? Colors.grey
-                                                  .withValues(alpha: 0.5)
-                                              : null,
-                                        )));
-                          },
-                        ),
+                Widget buildSeconds({required bool expanded}) {
+                  return SizedBox(
+                    width: expanded ? constraints.maxWidth : secondsWidth,
+                    height: height,
+                    child: CupertinoPicker(
+                      scrollController: FixedExtentScrollController(
+                        initialItem: state.initialSecondIndex,
                       ),
-                    ),
+                      diameterRatio: diameterRatio,
+                      itemExtent: itemExtent,
+                      squeeze: squeeze,
+                      magnification: magnification,
+                      looping: looping,
+                      selectionOverlay: selectionOverlay,
+                      onSelectedItemChanged: (index) {
+                        final secondValue = int.parse(state.seconds[index]);
+                        datetimeBloc
+                            .add(QuickUpdateSecond(second: secondValue));
+                      },
+                      children: List.generate(
+                        state.seconds.length,
+                        (index) {
+                          String second = state.seconds[index];
+                          final int secondValue = int.parse(second);
+                          final bool isDisabled = _isSecondDisabled(
+                              secondValue, datetimeBloc.state);
 
-                  /// AM/PM
-                  if (!is24HourMode)
-                    Expanded(
-                      child: CupertinoPicker.builder(
-                        scrollController: state.abbreviationController,
-                        diameterRatio: diameterRatio,
-                        itemExtent: itemExtent,
-                        squeeze: squeeze,
-                        magnification: magnification,
-                        selectionOverlay: selectionOverlay,
-                        onSelectedItemChanged: (index) {
-                          if (index == 0) {
-                            datetimeBloc.add(
-                                const QuickUpdateAbbreviation(isPm: false));
-                          } else {
-                            datetimeBloc
-                                .add(const QuickUpdateAbbreviation(isPm: true));
+                          if (isForce2Digits) {
+                            second = second.padLeft(2, '0');
                           }
-                        },
-                        childCount: state.abbreviations.length,
-                        itemBuilder: (context, index) {
+
                           return Center(
-                              child: Text(state.abbreviations[index],
-                                  style: timePickerTheme.hourMinuteTextStyle));
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                second,
+                                style: timePickerTheme.hourMinuteTextStyle
+                                        ?.copyWith(
+                                      color: isDisabled
+                                          ? Colors.grey
+                                              .withValues(alpha: 0.5)
+                                          : null,
+                                    ) ??
+                                    TextStyle(
+                                      color: isDisabled
+                                          ? Colors.grey
+                                              .withValues(alpha: 0.5)
+                                          : null,
+                                    ),
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
-                ],
-              ),
+                  );
+                }
+
+                Widget buildAmPm({required bool expanded}) {
+                  final bool isPm = datetimeBloc.state.dateTime.hour >= 12;
+                  if (expanded) {
+                    // Stacked/narrow: render a single-row of two buttons
+                    return SizedBox(
+                      width: constraints.maxWidth,
+                      height: 52,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                datetimeBloc.add(
+                                  const QuickUpdateAbbreviation(isPm: false),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: !isPm
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.surface,
+                                foregroundColor: !isPm
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                minimumSize: const Size(40, 40),
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  state.abbreviations[0],
+                                  style: timePickerTheme.hourMinuteTextStyle,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                datetimeBloc.add(
+                                  const QuickUpdateAbbreviation(isPm: true),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isPm
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.surface,
+                                foregroundColor: isPm
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                minimumSize: const Size(40, 40),
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  state.abbreviations[1],
+                                  style: timePickerTheme.hourMinuteTextStyle,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  // Wide: render two buttons stacked to fit the time column
+                  return SizedBox(
+                    width: ampmWidth,
+                    height: height,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              datetimeBloc.add(
+                                const QuickUpdateAbbreviation(isPm: false),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: !isPm
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.surface,
+                              foregroundColor: !isPm
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              minimumSize: const Size(40, 40),
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                state.abbreviations[0],
+                                style: timePickerTheme.hourMinuteTextStyle,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              datetimeBloc.add(
+                                const QuickUpdateAbbreviation(isPm: true),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isPm
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.surface,
+                              foregroundColor: isPm
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              minimumSize: const Size(40, 40),
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                state.abbreviations[1],
+                                style: timePickerTheme.hourMinuteTextStyle,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  );
+                }
+
+                if (!isNarrow) {
+                  return SizedBox(
+                    height: height,
+                    child: Row(
+                      textDirection: TextDirection.ltr,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildHours(expanded: false),
+                        buildMinutes(expanded: false),
+                        if (isShowSeconds) buildSeconds(expanded: false),
+                        if (!is24HourMode) buildAmPm(expanded: false),
+                      ],
+                    ),
+                  );
+                }
+
+                // Narrow: stack vertically, with AM/PM between hours and minutes
+                // Compute total height based on actual section heights
+                double totalHeight = hoursStackedHeight + minutesStackedHeight;
+                if (!is24HourMode) totalHeight += 52; // compact AM/PM row height
+                if (isShowSeconds) totalHeight += secondsHeight;
+                return SizedBox(
+                  height: totalHeight,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      buildHours(expanded: true),
+                      if (!is24HourMode) buildAmPm(expanded: true),
+                      buildMinutes(expanded: true),
+                      if (isShowSeconds) buildSeconds(expanded: true),
+                    ],
+                  ),
+                );
+              },
             );
           }
 
@@ -420,8 +625,9 @@ class TimePickerSpinner extends StatelessWidget {
         date1.day == date2.day;
   }
 
-  int _minuteColumns(int minuteIncrement) {
-    switch (minuteIncrement) {
+  int _minuteColumns(int minutesInterval) {
+
+    switch (minutesInterval) {
       case 1:
         return 6; // 0, 10, 20, 30, 40, 50
       case 2:
@@ -443,9 +649,16 @@ class TimePickerSpinner extends StatelessWidget {
       case 20:
         return 2; // 0, 30
       case 30:
+        return 1;
       default:
+        if (minutesInterval > 6 && minutesInterval < 15) {
+          return 4; // 0, 15, 30, 45
+        } else if (minutesInterval > 15 && minutesInterval < 30) {
+          return 2; // 0, 30
+        } else if (minutesInterval > 30 && minutesInterval < 60) {
+          return 1; // Only one column needed for full hour increments
+        } 
         return 1; // Only one column needed for full hour increments
     }
-
   }
 }

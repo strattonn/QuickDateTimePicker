@@ -22,7 +22,6 @@ class SinglePickerDialog extends StatefulWidget {
   final int? minutesInterval;
   final int? secondsInterval;
   final bool? isForce2Digits;
-  final int? minuteIncrement; // New parameter
   final bool? looping;
   final Widget? selectionOverlay;
 
@@ -49,8 +48,7 @@ class SinglePickerDialog extends StatefulWidget {
     this.is24HourMode,
     this.minutesInterval,
     this.secondsInterval,
-    this.isForce2Digits,
-    this.minuteIncrement, // Add to constructor
+  this.isForce2Digits,
     this.looping,
     this.selectionOverlay,
     this.padding,
@@ -86,7 +84,12 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
           borderRadius: widget.borderRadius ??
               const BorderRadius.all(Radius.circular(16))),
       child: ConstrainedBox(
-        constraints: widget.constraints ?? const BoxConstraints.tightFor(),
+        constraints: widget.constraints ?? const BoxConstraints(
+          minWidth: 300,
+          maxWidth: 500,  // Limit maximum width
+          minHeight: 200,
+          maxHeight: 600,
+        ),
         child: Padding(
           padding: widget.padding ?? EdgeInsets.zero,
           child: Column(
@@ -97,33 +100,34 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
                 widget.titleSeparator!,
               Flexible(
                 child: SingleChildScrollView(
-                  child: QuickDateTimePicker(
-                    onDateTimeChanged: (dateTime) {
-                      selectedDateTime = dateTime;
-                    },
-                    onCanSaveChanged: (canSaveValue) {
-                      setState(() {
-                        canSave = canSaveValue;
-                      });
-                    },
-                    initialDate: widget.initialDate ?? widget.firstDate,
-                    firstDate: widget.firstDate,
-                    lastDate: widget.lastDate,
-                    selectableDayPredicate: widget.selectableDayPredicate,
-                    amText: widget.amText,
-                    pmText: widget.pmText,
-                    isShowSeconds: widget.isShowSeconds ?? false,
-                    is24HourMode: widget.is24HourMode ?? false,
-                    minutesInterval: widget.minutesInterval ?? 1,
-                    secondsInterval: widget.secondsInterval ?? 1,
-                    isForce2Digits: widget.isForce2Digits ?? true,
-                    minuteIncrement: widget.minuteIncrement ?? 1, // Add the new parameter
-                    looping: widget.looping ?? true,
-                    selectionOverlay: widget.selectionOverlay ??
-                        const CupertinoPickerDefaultSelectionOverlay(),
-                    separator: widget.separator,
-                    type: widget.type ?? QuickDateTimePickerType.dateAndTime,
-                  ),
+                  child: Builder(builder: (context) {
+                    return QuickDateTimePicker(
+                      onDateTimeChanged: (dateTime) {
+                        selectedDateTime = dateTime;
+                      },
+                      onCanSaveChanged: (canSaveValue) {
+                        setState(() {
+                          canSave = canSaveValue;
+                        });
+                      },
+                      initialDate: widget.initialDate ?? widget.firstDate,
+                      firstDate: widget.firstDate,
+                      lastDate: widget.lastDate,
+                      selectableDayPredicate: widget.selectableDayPredicate,
+                      amText: widget.amText,
+                      pmText: widget.pmText,
+                      isShowSeconds: widget.isShowSeconds ?? false,
+                      is24HourMode: widget.is24HourMode ?? false,
+                      minutesInterval: widget.minutesInterval ?? 1,
+                      secondsInterval: widget.secondsInterval ?? 1,
+                      isForce2Digits: widget.isForce2Digits ?? true,
+                      looping: widget.looping ?? true,
+                      selectionOverlay: widget.selectionOverlay ??
+                          const CupertinoPickerDefaultSelectionOverlay(),
+                      separator: widget.separator,
+                      type: widget.type ?? QuickDateTimePickerType.dateAndTime,
+                    );
+                  }),
                 ),
               ),
               ButtonRow(

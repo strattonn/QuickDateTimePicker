@@ -41,13 +41,14 @@ class QuickExample extends StatelessWidget {
                 // Use dateTime here
                 debugPrint('dateTime: $dateTime');
               },
-              child: const Text('Show DateTime Picker'),
+              child: const Text('Show Quick DateTime Picker'),
             ),
             ElevatedButton(
               onPressed: () async {
                 final DateTime? result = await showQuickDateTimePicker(
                   context: context,
-                  is24HourMode: true,
+                  is24HourMode: false,
+                  minutesInterval: 5
                 );
 
                 if (result != null) {

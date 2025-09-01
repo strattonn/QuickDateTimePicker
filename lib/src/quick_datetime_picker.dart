@@ -23,7 +23,6 @@ class QuickDateTimePicker extends StatefulWidget {
   final int minutesInterval;
   final int secondsInterval;
   final bool isForce2Digits;
-  final int minuteIncrement; // New parameter
   final bool looping;
 
   final Widget selectionOverlay;
@@ -45,8 +44,7 @@ class QuickDateTimePicker extends StatefulWidget {
     this.is24HourMode = false,
     this.minutesInterval = 1,
     this.secondsInterval = 1,
-    this.isForce2Digits = true,
-    this.minuteIncrement = 1, // Default to 1
+  this.isForce2Digits = true,
     this.looping = true,
     this.selectionOverlay = const CupertinoPickerDefaultSelectionOverlay(),
     this.separator,
@@ -135,7 +133,6 @@ class _QuickDateTimePickerState extends State<QuickDateTimePicker> {
                     minutesInterval: widget.minutesInterval,
                     secondsInterval: widget.secondsInterval,
                     isForce2Digits: widget.isForce2Digits,
-                    minuteIncrement: widget.minuteIncrement, // Add the new parameter
                     looping: widget.looping,
                     selectionOverlay: widget.selectionOverlay,
                   ),

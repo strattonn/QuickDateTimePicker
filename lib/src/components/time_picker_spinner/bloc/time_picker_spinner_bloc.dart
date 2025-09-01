@@ -15,7 +15,6 @@ class TimePickerSpinnerBloc
   final int minutesInterval;
   final int secondsInterval;
   final bool isForce2Digits;
-  final int minuteIncrement; // New parameter
   final DateTime firstDateTime;
   final DateTime lastDateTime;
   final DateTime initialDateTime;
@@ -28,7 +27,6 @@ class TimePickerSpinnerBloc
     required this.minutesInterval,
     required this.secondsInterval,
     required this.isForce2Digits,
-    required this.minuteIncrement, // Add to constructor
     required this.firstDateTime,
     required this.lastDateTime,
     required this.initialDateTime,
@@ -135,10 +133,11 @@ class TimePickerSpinnerBloc
   }
 
   List<String> _generateMinutes() {
+    final step = minutesInterval <= 0 ? 1 : minutesInterval;
     final List<String> minutes = List.generate(
-      (60 / minuteIncrement).floor(),
+      (60 / step).floor(),
       (index) {
-        return '${index * minuteIncrement}';
+        return '${index * step}';
       },
     );
     return minutes;
