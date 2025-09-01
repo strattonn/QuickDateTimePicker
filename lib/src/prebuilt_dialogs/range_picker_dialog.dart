@@ -168,10 +168,10 @@ class _RangePickerDialogState extends State<RangePickerDialog>
                             _canSaveStart = canSaveValue;
                           });
                         },
-                        initialDate:
+                        initialDateTime:
                             widget.startInitialDate ?? widget.startFirstDate,
-                        firstDate: widget.startFirstDate,
-                        lastDate: widget.startLastDate,
+                        firstDateTime: widget.startFirstDate,
+                        lastDateTime: widget.startLastDate,
                         selectableDayPredicate:
                             widget.startSelectableDayPredicate,
                         amText: widget.amText,
@@ -198,10 +198,10 @@ class _RangePickerDialogState extends State<RangePickerDialog>
                             _canSaveEnd = canSaveValue;
                           });
                         },
-                        initialDate:
+                        initialDateTime:
                             widget.endInitialDate ?? widget.endFirstDate,
-                        firstDate: widget.endFirstDate,
-                        lastDate: widget.endLastDate,
+                        firstDateTime: widget.endFirstDate,
+                        lastDateTime: widget.endLastDate,
                         selectableDayPredicate:
                             widget.endSelectableDayPredicate,
                         amText: widget.amText,

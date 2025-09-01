@@ -25,7 +25,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: QuickDateTimePicker(
-              initialDate: initialDate,
+              initialDateTime: initialDate,
               onDateTimeChanged: (dateTime) {},
             ),
           ),
@@ -63,9 +63,9 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: QuickDateTimePicker(
-              initialDate: initialDate,
-              firstDate: firstDate,
-              lastDate: lastDate,
+              initialDateTime: initialDate,
+              firstDateTime: firstDate,
+              lastDateTime: lastDate,
               onDateTimeChanged: (dateTime) {},
             ),
           ),

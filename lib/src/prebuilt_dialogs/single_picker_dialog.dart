@@ -110,9 +110,9 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
                           canSave = canSaveValue;
                         });
                       },
-                      initialDate: widget.initialDate ?? widget.firstDate,
-                      firstDate: widget.firstDate,
-                      lastDate: widget.lastDate,
+                      initialDateTime: widget.initialDate ?? widget.firstDate,
+                      firstDateTime: widget.firstDate,
+                      lastDateTime: widget.lastDate,
                       selectableDayPredicate: widget.selectableDayPredicate,
                       amText: widget.amText,
                       pmText: widget.pmText,

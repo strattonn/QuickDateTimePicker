@@ -9,9 +9,9 @@ import 'components/time_picker_spinner/time_picker_spinner.dart';
 import 'enums/quick_datetime_picker_type.dart';
 
 class QuickDateTimePicker extends StatefulWidget {
-  final DateTime? initialDate;
-  final DateTime? firstDate;
-  final DateTime? lastDate;
+  final DateTime? initialDateTime;
+  final DateTime? firstDateTime;
+  final DateTime? lastDateTime;
   final bool Function(DateTime)? selectableDayPredicate;
   final ValueChanged<DateTime> onDateTimeChanged;
   final ValueChanged<bool>? onCanSaveChanged;
@@ -32,9 +32,9 @@ class QuickDateTimePicker extends StatefulWidget {
 
   const QuickDateTimePicker({
     super.key,
-    this.initialDate,
-    this.firstDate,
-    this.lastDate,
+    this.initialDateTime,
+    this.firstDateTime,
+    this.lastDateTime,
     this.selectableDayPredicate,
     required this.onDateTimeChanged,
     this.onCanSaveChanged,
@@ -69,7 +69,7 @@ class _QuickDateTimePickerState extends State<QuickDateTimePicker> {
 
     return BlocProvider(
       create: (context) {
-        final initialDateTime = widget.initialDate ?? defaultInitialDate;
+        final initialDateTime = widget.initialDateTime ?? defaultInitialDate;
         final truncatedInitialDateTime = widget.isShowSeconds
             ? DateTime(
                 initialDateTime.year,
@@ -87,8 +87,8 @@ class _QuickDateTimePickerState extends State<QuickDateTimePicker> {
 
         return QuickDatetimePickerBloc(
           initialDateTime: truncatedInitialDateTime,
-          firstDate: widget.firstDate ?? defaultFirstDate,
-          lastDate: widget.lastDate ?? defaultLastDate,
+          firstDate: widget.firstDateTime ?? defaultFirstDate,
+          lastDate: widget.lastDateTime ?? defaultLastDate,
         );
       },
   child: BlocConsumer<QuickDatetimePickerBloc, QuickDatetimePickerState>(
