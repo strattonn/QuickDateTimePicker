@@ -71,9 +71,9 @@ void main() {
                   showQuickDateTimePicker(
                     context: context,
                     type: QuickDateTimePickerType.date,
-                    initialDate: DateTime(2024, 6, 15),
-                    firstDate: DateTime(2024, 1, 1),
-                    lastDate: DateTime(2024, 12, 31),
+                    initialDateTime: DateTime(2024, 6, 15),
+                    firstDateTime: DateTime(2024, 1, 1),
+                    lastDateTime: DateTime(2024, 12, 31),
                     is24HourMode: true,
                   );
                 },
