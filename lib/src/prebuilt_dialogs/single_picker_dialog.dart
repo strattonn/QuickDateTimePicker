@@ -86,7 +86,7 @@ class _SinglePickerDialogState extends State<SinglePickerDialog> {
       child: ConstrainedBox(
         constraints: widget.constraints ?? const BoxConstraints(
           minWidth: 300,
-          maxWidth: 500,  // Limit maximum width
+          maxWidth: 400,  // Limit maximum width
           minHeight: 200,
           maxHeight: 600,
         ),

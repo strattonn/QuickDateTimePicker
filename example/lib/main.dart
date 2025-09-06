@@ -48,7 +48,7 @@ class QuickExample extends StatelessWidget {
                 final DateTime? result = await showQuickDateTimePicker(
                   context: context,
                   is24HourMode: false,
-                  minutesInterval: 5
+                  minutesInterval: 15
                 );
 
                 if (result != null) {
@@ -65,6 +65,7 @@ class QuickExample extends StatelessWidget {
               onPressed: () async {
                 final DateTime? result = await showQuickDateTimePicker(
                   context: context,
+                  minutesInterval: 15,
                   is24HourMode: true,
                   isShowSeconds: true,
                 );
@@ -88,6 +89,20 @@ class QuickExample extends StatelessWidget {
                 debugPrint('dateTime: $dateTime');
               },
               child: const Text('Show DateTime Picker'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () async {
+                final DateTime? dateOnly =
+                    await showQuickDateOnlyPicker(context: context);
+
+                if (dateOnly != null) {
+                  debugPrint('Selected date-only: ${dateOnly.toIso8601String()}');
+                } else {
+                  debugPrint('Date-only picker dismissed');
+                }
+              },
+              child: const Text('Show Date-Only Picker'),
             ),
           ],
         ),

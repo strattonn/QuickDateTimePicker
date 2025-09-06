@@ -179,3 +179,51 @@ Future<List<DateTime>?> showQuickDateTimeRangePicker({
     },
   );
 }
+
+/// Show a dialog that only allows picking a date (no time).
+///
+/// This is a small convenience wrapper around [showQuickDateTimePicker]
+/// that forces `type` to [QuickDateTimePickerType.date].
+Future<DateTime?> showQuickDateOnlyPicker({
+  required BuildContext context,
+  Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
+      transitionBuilder,
+  Duration? transitionDuration,
+  bool? barrierDismissible,
+  Color? barrierColor,
+  Widget? title,
+  Widget? titleSeparator,
+  Widget? separator,
+  DateTime? initialDate,
+  DateTime? firstDate,
+  DateTime? lastDate,
+  bool Function(DateTime)? selectableDayPredicate,
+  BorderRadiusGeometry? borderRadius,
+  EdgeInsets? padding,
+  EdgeInsets? insetPadding,
+  BoxConstraints? constraints,
+  ThemeData? theme,
+  ButtonRowBuilder? actionsBuilder,
+}) {
+  return showQuickDateTimePicker(
+    context: context,
+    transitionBuilder: transitionBuilder,
+    transitionDuration: transitionDuration,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    title: title,
+    titleSeparator: titleSeparator,
+    separator: separator,
+    type: QuickDateTimePickerType.date,
+    initialDateTime: initialDate,
+    firstDateTime: firstDate,
+    lastDateTime: lastDate,
+    selectableDayPredicate: selectableDayPredicate,
+    borderRadius: borderRadius,
+    padding: padding,
+    insetPadding: insetPadding,
+    constraints: constraints,
+    theme: theme,
+    actionsBuilder: actionsBuilder,
+  );
+}
