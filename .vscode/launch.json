@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "QuickDateTimePicker Example (Windows)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+  "program": "lib/main.dart",
+  "cwd": "${workspaceFolder}/example",
+      "args": [
+        "-d",
+        "windows"
+      ]
+    },
+    {
+      "name": "QuickDateTimePicker Example (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+  "program": "lib/main.dart",
+  "cwd": "${workspaceFolder}/example",
+      "args": [
+        "-d",
+        "chrome"
+      ]
+    },
+    {
+      "name": "QuickDateTimePicker Example (Android)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+  "program": "lib/main.dart",
+  "cwd": "${workspaceFolder}/example",
+      "args": [
+        "-d",
+        "android"
+      ]
+    }
+  ]
+}

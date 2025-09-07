@@ -1,0 +1,9 @@
+{
+    "dart.flutterSelectDeviceWhenConnected": false,
+    "dart.flutterSdkPath": null,
+    "dart.showTodos": false,
+    "files.watcherExclude": {
+        "**/build/**": true
+    },
+    "dart.openDevTools": "flutter"
+}

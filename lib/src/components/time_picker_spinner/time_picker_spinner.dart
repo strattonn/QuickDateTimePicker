@@ -91,17 +91,23 @@ class TimePickerSpinner extends StatelessWidget {
                                 // Treat small devices as mobile (already computed above)
 
                                 // Spacing/padding constants reused for both sections
-                                // On mobile we'll increase container padding so tiles are smaller visually
-                                final double hoursPaddingH = isMobile ? 32.0 : 8.0; // total horizontal (left+right)
-                                final double minutesPaddingH = isMobile ? 32.0 : 8.0; // total horizontal (left+right)
-                                final double hoursPaddingV = isMobile ? 32.0 : 8.0; // total vertical (top+bottom)
-                                final double minutesPaddingV = isMobile ? 32.0 : 8.0; // total vertical (top+bottom)
+                                // Tune mobile paddings so grids sit closer to the top, while keeping numbers visually smaller.
+                                final double hoursPadLR = isMobile ? 16.0 : 4.0;
+                                final double hoursPadTop = isMobile ? 0.0 : 4.0;
+                                final double hoursPadBottom = isMobile ? 16.0 : 4.0;
+                                final double minutesPadLR = isMobile ? 16.0 : 4.0;
+                                final double minutesPadTop = isMobile ? 0.0 : 4.0;
+                                final double minutesPadBottom = isMobile ? 16.0 : 4.0;
+
+                                // Totals used in layout math below (for wide layout only)
+                                final double hoursPaddingH = hoursPadLR * 2;
+                                final double minutesPaddingH = minutesPadLR * 2;
                                 const double hoursSpacing = 3.0; // Grid mainAxisSpacing for hours
                                 const double minutesSpacing = 4.0; // Grid mainAxisSpacing for minutes
 
                                 const double secondsWidth = 80;
                                 const double ampmWidth = 70;
-                                final double secondsHeight = height;
+                                // final double secondsHeight = height; // Not needed since we're not pre-calculating heights
 
                                 // Compute available width for tile columns by removing fixed columns
                                 final double otherFixedWidth =
@@ -140,40 +146,19 @@ class TimePickerSpinner extends StatelessWidget {
 
                                 final bool isNarrow = isMobile || constraints.maxWidth < requiredHorizontalWidth;
 
-                                // Precompute minutes grid height for stacked layout (no internal scroll)
-                                final int minuteItemCount = state.minutes.length;
-                                final int minuteRows = (minuteItemCount / minuteColumns).ceil();
-                                final double gridAvailWidth =
-                                    constraints.maxWidth - minutesPaddingH -
-                                        (minuteColumns > 1 ? (minuteColumns - 1) * minutesSpacing : 0);
-                                final double tileWidth = gridAvailWidth / minuteColumns;
-                                final double tileHeight = tileWidth; // childAspectRatio == 1.0
-                                final double minutesStackedHeight =
-                                    (minuteRows * tileHeight) +
-                                        (minuteRows > 1 ? (minuteRows - 1) * minutesSpacing : 0) +
-                                        minutesPaddingV + 2; // small safety to avoid visual clipping
-
-                                // Precompute hours grid height for stacked layout (no internal scroll)
-                                final int hourItemCount = state.hours.length;
-                                final int hourRows = (hourItemCount / hourColumns).ceil();
-                                final double hoursAvailWidth =
-                                    constraints.maxWidth - hoursPaddingH -
-                                        (hourColumns > 1 ? (hourColumns - 1) * hoursSpacing : 0);
-                                final double hourTileW = hoursAvailWidth / hourColumns;
-                                final double hourTileH = hourTileW; // square tiles
-                                final double hoursStackedHeight =
-                                    (hourRows * hourTileH) +
-                                        (hourRows > 1 ? (hourRows - 1) * hoursSpacing : 0) +
-                                        hoursPaddingV + 2;
-
                                 // Helpers to build each section; expanded=true uses full width
                                 Widget buildHours({required bool expanded}) {
-                                  final double targetHeight = expanded ? hoursStackedHeight : height;
                                   return SizedBox(
                                     width: expanded ? constraints.maxWidth : hoursWidth,
-                                    height: targetHeight,
+                                    height: expanded ? null : height,
                                     child: Container(
-                                      padding: EdgeInsets.all(expanded && isMobile ? 16.0 : 4.0),
+                                      padding: EdgeInsets.fromLTRB(
+                                        hoursPadLR,
+                                        expanded && isMobile ? hoursPadTop : 4.0,
+                                        hoursPadLR,
+                                        expanded && isMobile ? hoursPadBottom : 4.0,
+                                      ),
+                                      alignment: Alignment.topCenter,
                                       child: GridView.builder(
                                         gridDelegate:
                                             SliverGridDelegateWithFixedCrossAxisCount(
@@ -258,13 +243,17 @@ class TimePickerSpinner extends StatelessWidget {
                                 }
 
                                 Widget buildMinutes({required bool expanded}) {
-                                  final double targetHeight = expanded ? minutesStackedHeight : height;
                                   return SizedBox(
                                     width: expanded ? constraints.maxWidth : minutesWidth,
-                                    height: targetHeight,
+                                    height: expanded ? null : height,
                                     child: Container(
                                       // Match hours' container padding so tops align
-                                      padding: EdgeInsets.all(expanded && isMobile ? 16.0 : 4.0),
+                                      padding: EdgeInsets.fromLTRB(
+                                        minutesPadLR,
+                                        expanded && isMobile ? minutesPadTop : 4.0,
+                                        minutesPadLR,
+                                        expanded && isMobile ? minutesPadBottom : 4.0,
+                                      ),
                                       child: GridView.builder(
                                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisCount: minuteColumns,
@@ -528,10 +517,10 @@ class TimePickerSpinner extends StatelessWidget {
                                 }
 
                                 // Narrow/mobile: stack vertically. On mobile prefer hours->minutes->AMPM for ergonomics.
-                                // Compute total height based on actual section heights
-                                double totalHeight = hoursStackedHeight + minutesStackedHeight;
-                                if (!is24HourMode) totalHeight += 52; // compact AM/PM row height
-                                if (isShowSeconds) totalHeight += secondsHeight;
+                                // Let the Column size itself naturally since grids are shrink-wrapping
+                                // double totalHeight = hoursStackedHeight + minutesStackedHeight;
+                                // if (!is24HourMode) totalHeight += 52; // compact AM/PM row height
+                                // if (isShowSeconds) totalHeight += secondsHeight;
 
                                 // Build child list with mobile-optimized order when on small devices
                                 final List<Widget> stackedChildren = [];
@@ -545,13 +534,10 @@ class TimePickerSpinner extends StatelessWidget {
                                 }
                                 if (isShowSeconds) stackedChildren.add(buildSeconds(expanded: true));
 
-                                return SizedBox(
-                                  height: totalHeight,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: stackedChildren,
-                                  ),
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: stackedChildren,
                                 );
                               },
                             );
