@@ -167,7 +167,6 @@ class TimePickerSpinner extends StatelessWidget {
                         hoursPadLR,
                         expanded && isMobile ? hoursPadBottom : 4.0,
                       ),
-                      alignment: Alignment.topCenter,
                       child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: hourColumns,
