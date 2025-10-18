@@ -24,7 +24,7 @@ class TimePickerSpinner extends StatelessWidget {
 
   const TimePickerSpinner({
     super.key,
-    this.height = 200,
+    this.height = 150,
     this.diameterRatio = 2,
     this.itemExtent = 40,
     this.squeeze = 1,
@@ -94,12 +94,12 @@ class TimePickerSpinner extends StatelessWidget {
 
                 // Spacing/padding constants reused for both sections
                 // Tune mobile paddings so grids sit closer to the top, while keeping numbers visually smaller.
-                final double hoursPadLR = isMobile ? 16.0 : 4.0;
-                final double hoursPadTop = isMobile ? 0.0 : 4.0;
-                final double hoursPadBottom = isMobile ? 16.0 : 4.0;
-                final double minutesPadLR = isMobile ? 16.0 : 4.0;
-                final double minutesPadTop = isMobile ? 0.0 : 4.0;
-                final double minutesPadBottom = isMobile ? 16.0 : 4.0;
+                final double hoursPadLR = isMobile ? 16.0 : 8.0;
+                final double hoursPadTop = isMobile ? 0.0 : 6.0;
+                final double hoursPadBottom = isMobile ? 16.0 : 0.0;
+                final double minutesPadLR = isMobile ? 16.0 : 8.0;
+                final double minutesPadTop = isMobile ? 0.0 : 6.0;
+                final double minutesPadBottom = isMobile ? 16.0 : 0.0;
 
                 // Totals used in layout math below (for wide layout only)
                 final double hoursPaddingH = hoursPadLR * 2;
@@ -110,14 +110,14 @@ class TimePickerSpinner extends StatelessWidget {
                     4.0; // Grid mainAxisSpacing for minutes
 
                 const double secondsWidth = 80;
-                const double ampmWidth = 70;
+                const double ampmWidth = 50;
                 // final double secondsHeight = height; // Not needed since we're not pre-calculating heights
 
                 // Compute available width for tile columns by removing fixed columns
                 final double otherFixedWidth =
                     (isShowSeconds ? secondsWidth : 0) +
                         (!is24HourMode ? ampmWidth : 0) +
-                        16; // small allowance for extra padding
+                        32; // small allowance for extra padding
 
                 // Total gaps and paddings consumed by both grids
                 final double totalGapsAndPadding =
@@ -225,7 +225,7 @@ class TimePickerSpinner extends StatelessWidget {
                               foregroundColor: isSelected
                                   ? Theme.of(context).colorScheme.onPrimary
                                   : (isDisabled
-                                      ? Colors.grey.withOpacity(0.5)
+                                      ? Colors.grey.withValues(alpha: 0.5)
                                       : Theme.of(context)
                                           .colorScheme
                                           .onSurface),
@@ -308,7 +308,7 @@ class TimePickerSpinner extends StatelessWidget {
                               foregroundColor: isSelected
                                   ? Theme.of(context).colorScheme.onPrimary
                                   : (isDisabled
-                                      ? Colors.grey.withOpacity(0.5)
+                                      ? Colors.grey.withValues(alpha: 0.5)
                                       : Theme.of(context)
                                           .colorScheme
                                           .onSurface),
@@ -377,12 +377,12 @@ class TimePickerSpinner extends StatelessWidget {
                                 style: timePickerTheme.hourMinuteTextStyle
                                         ?.copyWith(
                                       color: isDisabled
-                                          ? Colors.grey.withOpacity(0.5)
+                                          ? Colors.grey.withValues(alpha: 0.5)
                                           : null,
                                     ) ??
                                     TextStyle(
                                       color: isDisabled
-                                          ? Colors.grey.withOpacity(0.5)
+                                          ? Colors.grey.withValues(alpha: 0.5)
                                           : null,
                                     ),
                               ),
@@ -553,14 +553,25 @@ class TimePickerSpinner extends StatelessWidget {
 
                 if (!isNarrow) {
                   return SizedBox(
-                    height: height,
                     child: Row(
                       textDirection: TextDirection.ltr,
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        buildHours(expanded: false),
-                        buildMinutes(expanded: false),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("Hour", style: timePickerTheme.hourMinuteTextStyle),
+                            buildHours(expanded: false),
+                          ],
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("Minute", style: timePickerTheme.hourMinuteTextStyle),
+                            buildMinutes(expanded: false),
+                          ],
+                        ),
                         if (isShowSeconds) buildSeconds(expanded: false),
                         if (!is24HourMode) buildAmPm(expanded: false),
                       ],
@@ -576,18 +587,29 @@ class TimePickerSpinner extends StatelessWidget {
 
                 // Build child list with mobile-optimized order when on small devices
                 final List<Widget> stackedChildren = [];
+                stackedChildren.add(Text("Hour", 
+                  style: timePickerTheme.dialTextStyle,
+                  textAlign: TextAlign.center,
+                ));
                 stackedChildren.add(buildHours(expanded: true));
                 if (isMobile) {
+                stackedChildren.add(Text("Minute", 
+                  style: timePickerTheme.dialTextStyle,
+                  textAlign: TextAlign.center,
+                ));
                   stackedChildren.add(buildMinutes(expanded: true));
-                  if (!is24HourMode)
+                  if (!is24HourMode) {
                     stackedChildren.add(buildAmPm(expanded: true));
+                  }
                 } else {
-                  if (!is24HourMode)
+                  if (!is24HourMode) {
                     stackedChildren.add(buildAmPm(expanded: true));
-                  stackedChildren.add(buildMinutes(expanded: true));
+                    stackedChildren.add(buildMinutes(expanded: true));
+                  }
                 }
-                if (isShowSeconds)
+                if (isShowSeconds) {
                   stackedChildren.add(buildSeconds(expanded: true));
+                }
 
                 return Column(
                   mainAxisSize: MainAxisSize.min,
